@@ -1,125 +1,222 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Chrysanthi, Will you be my Valentine?</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Be My Valentine 💘</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #ffe6f2;
-      text-align: center;
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    :root{
+      --pink:#ff4d6d;
+      --bg1:#ff9a9e;
+      --bg2:#fad0c4;
     }
-    h1 {
-      color: #d6006b;
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100svh; /* better on mobile than 100vh */
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      overflow:hidden;
+      text-align:center;
     }
-    #buttons {
-      margin-top: 20px;
+
+    .card{
+      width:min(520px, 92vw);
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 18px 40px rgba(0,0,0,.18);
+      padding:18px 16px 16px;
     }
-    button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
+
+    h1{
+      margin:6px 0 10px;
+      color:var(--pink);
+      font-size:clamp(22px, 5vw, 32px);
+      line-height:1.15;
     }
-    #yesBtn {
-      background: #ff4d88;
-      color: white;
+
+    .sub{
+      margin:0 0 12px;
+      color:#444;
+      font-size:clamp(14px, 3.5vw, 16px);
     }
-    #noBtn {
-      background: #cccccc;
-      color: #333;
-      position: relative;
+
+    .btnRow{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:8px;
     }
-    #catContainer {
-      margin-top: 20px;
-      display: none;
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding:14px 22px;
+      font-size:clamp(16px, 4vw, 18px);
+      cursor:pointer;
+      min-width:140px;
+      touch-action:manipulation;
+      transition:transform .08s ease;
     }
-    #catContainer img {
-      max-width: 250px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    button:active{ transform:scale(.98); }
+
+    #yes{
+      background:var(--pink);
+      color:#fff;
     }
-    #message {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #d6006b;
-      font-weight: bold;
-      display: none;
+
+    /* The dodging No button floats around */
+    #no{
+      position:fixed;
+      left:50%;
+      top:70%;
+      transform:translate(-50%,-50%);
+      background:#d7d7d7;
+      color:#222;
+      z-index:999;
+    }
+
+    .counter{
+      margin-top:12px;
+      color:#333;
+      font-size:clamp(13px, 3.6vw, 15px);
+      min-height:20px;
+    }
+
+    #catWrap{
+      display:none;
+      margin-top:14px;
+    }
+
+    #catWrap h3{
+      margin:10px 0 10px;
+      font-size:clamp(15px, 4vw, 18px);
+      color:#333;
+    }
+
+    .catImg{
+      width:min(320px, 80vw);
+      height:auto;
+      border-radius:16px;
+      box-shadow:0 12px 24px rgba(0,0,0,.14);
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:#666;
     }
   </style>
 </head>
+
 <body>
-  <h1>Chrysanthi, Will you be my Valentine? 💘</h1>
+  <div class="card" id="card">
+    <h1>Will you be my Valentine? 💖</h1>
+    <p class="sub">Choose wisely 😌</p>
 
-  <div id="buttons">
-    <button id="yesBtn">Yes</button>
-    <button id="noBtn">No</button>
+    <div class="btnRow">
+      <button id="yes">Yes 💘</button>
+      <!-- No button is floating; we keep layout clean -->
+    </div>
+
+    <div class="counter" id="counter"></div>
+
+    <div id="catWrap">
+      <h3>Okay okay… you unlocked the cat 🐱💘</h3>
+      <!-- Put your generated image in the repo as cat-heart.png -->
+      <img class="catImg" src="cat-heart.png" alt="Cat with heart cannons" />
+      <div class="hint">Now press “Yes” 😄</div>
+    </div>
   </div>
 
-  <div id="message">I knew you would say yes! 🥰</div>
-
-  <div id="catContainer">
-    <p>Don’t miss with me again 👿</p>
-    <img id="catImg" src="" alt="Cute cat">
-  </div>
+  <button id="no" aria-label="No">No 🙃</button>
 
   <script>
-    const yesBtn = document.getElementById('yesBtn');
-    const noBtn = document.getElementById('noBtn');
-    const message = document.getElementById('message');
-    const catContainer = document.getElementById('catContainer');
-    const catImg = document.getElementById('catImg');
+    let tries = 0;
 
-    let noAttempts = 0;
-    const maxAttempts = 5;
+    const yesBtn = document.getElementById("yes");
+    const noBtn = document.getElementById("no");
+    const counter = document.getElementById("counter");
+    const catWrap = document.getElementById("catWrap");
 
-    // When she clicks "Yes"
-    yesBtn.addEventListener('click', () => {
-      message.style.display = 'block';
-      catContainer.style.display = 'block';
-      // Random cat photo
-      catImg.src = 'https://media.istockphoto.com/id/621938340/photo/cat-with-guns-is-murderer.jpg?s=612x612&w=0&k=20&c=mg13zVmv71x33nsYiRZ3LJzBD5OE1HY2Xx7Ae70KVko=';
-    });
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-    // Make "No" button run away and count attempts
-    noBtn.addEventListener('mouseover', () => {
-      if (noAttempts >= maxAttempts) {
-        return; // stop moving after max attempts
+    function moveNoButton() {
+      tries++;
+
+      // After 5 tries: disable "No" and reveal cat
+      if (tries >= 5) {
+        counter.textContent = "No is officially retired.";
+        noBtn.style.display = "none";
+        catWrap.style.display = "block";
+        return;
       }
 
-      noAttempts++;
+      counter.textContent = `Nice try 😏 (${tries}/5)`;
 
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      // Keep within viewport with padding
+      const pad = 10;
+      const bw = noBtn.offsetWidth || 120;
+      const bh = noBtn.offsetHeight || 48;
 
-      const newLeft = Math.random() * (viewportWidth - 100);
-      const newTop = Math.random() * (viewportHeight - 50);
+      const maxX = window.innerWidth - bw - pad;
+      const maxY = window.innerHeight - bh - pad;
 
-      noBtn.style.position = 'fixed';
-      noBtn.style.left = newLeft + 'px';
-      noBtn.style.top = newTop + 'px';
+      const x = clamp(pad + Math.random() * (maxX - pad), pad, maxX);
+      const y = clamp(pad + Math.random() * (maxY - pad), pad, maxY);
 
-      if (noAttempts === maxAttempts) {
-        // After 5 tries, show cat photo automatically
-        catContainer.style.display = 'block';
-        catImg.src = 'https://media.istockphoto.com/id/621938340/photo/cat-with-guns-is-murderer.jpg?s=612x612&w=0&k=20&c=mg13zVmv71x33nsYiRZ3LJzBD5OE1HY2Xx7Ae70KVko=';
-      }
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+      noBtn.style.transform = "none";
+    }
+
+    // Make "No" impossible: move on hover and touch
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    noBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // Also move it if they try to focus it via keyboard
+    noBtn.addEventListener("focus", moveNoButton);
+
+    yesBtn.addEventListener("click", () => {
+      document.body.innerHTML = `
+        <div style="
+          text-align:center;
+          padding:24px;
+          color:white;
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+          <h1 style="font-size:clamp(34px,8vw,52px); margin:0 0 10px;">YAYYYYY 💕</h1>
+          <p style="font-size:clamp(18px,4.8vw,24px); margin:0;">Best Valentine ever 💘</p>
+        </div>
+      `;
     });
 
-    // If she somehow clicks "No", treat it as "Yes"
-    noBtn.addEventListener('click', () => {
-      message.style.display = 'block';
-      catContainer.style.display = 'block';
-      catImg.src = 'https://media.istockphoto.com/id/621938340/photo/cat-with-guns-is-murderer.jpg?s=612x612&w=0&k=20&c=mg13zVmv71x33nsYiRZ3LJzBD5OE1HY2Xx7Ae70KVko=';
+    // Start the "No" somewhere reasonable
+    // (but don't count it as a try)
+    function placeNoInitial(){
+      const pad = 10;
+      const bw = noBtn.offsetWidth || 120;
+      const bh = noBtn.offsetHeight || 48;
+      const x = window.innerWidth - bw - pad;
+      const y = window.innerHeight * 0.68;
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.transform = "none";
+    }
+
+    window.addEventListener("resize", () => {
+      if (noBtn.style.display !== "none") placeNoInitial();
     });
+
+    requestAnimationFrame(placeNoInitial);
   </script>
 </body>
 </html>
