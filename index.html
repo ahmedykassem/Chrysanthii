@@ -2,111 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Be My Valentine 💘</title>
+  <title>Will you be my Valentine?</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background: #ffe6f2;
+      text-align: center;
       height: 100vh;
       margin: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
     }
-
-    .card {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      max-width: 350px;
-    }
-
     h1 {
-      color: #ff4d6d;
+      color: #d6006b;
     }
-
-    button {
-      padding: 12px 25px;
-      margin: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-    }
-
-    #yes {
-      background: #ff4d6d;
-      color: white;
-    }
-
-    #no {
-      background: #ccc;
-      position: absolute;
-    }
-
-    #cat {
-      display: none;
+    #buttons {
       margin-top: 20px;
     }
-
-    img {
-      max-width: 100%;
-      border-radius: 15px;
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
     }
-
-    .counter {
-      font-size: 14px;
-      color: #555;
+    #yesBtn {
+      background: #ff4d88;
+      color: white;
+    }
+    #noBtn {
+      background: #cccccc;
+      color: #333;
+      position: relative;
+    }
+    #catContainer {
+      margin-top: 20px;
+      display: none;
+    }
+    #catContainer img {
+      max-width: 250px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #d6006b;
+      font-weight: bold;
+      display: none;
     }
   </style>
 </head>
 <body>
+  <h1>Will you be my Valentine? 💘</h1>
 
-  <div class="card">
-    <h1>Will you be my Valentine? 💖</h1>
-    <button id="yes" onclick="yesClicked()">Yes 💘</button>
-    <button id="no">No 🙃</button>
-    <div class="counter" id="counter"></div>
+  <div id="buttons">
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+  </div>
 
-    <div id="cat">
-      <h3>Okay okay… you unlocked the cat 🐱</h3>
-      <img src="https://placekitten.com/300/300" alt="Cute Cat">
-    </div>
+  <div id="message">I knew you would say yes! 🥰</div>
+
+  <div id="catContainer">
+    <p>Here is a special cat just for you 😺</p>
+    <img id="catImg" src="" alt="Cute cat">
   </div>
 
   <script>
-    let tries = 0;
-    const noBtn = document.getElementById("no");
-    const counter = document.getElementById("counter");
-    const cat = document.getElementById("cat");
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const message = document.getElementById('message');
+    const catContainer = document.getElementById('catContainer');
+    const catImg = document.getElementById('catImg');
 
-    noBtn.addEventListener("mouseover", () => {
-      tries++;
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 50);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+    let noAttempts = 0;
+    const maxAttempts = 5;
 
-      counter.textContent = `Nice try 😏 (${tries}/5)`;
+    // When she clicks "Yes"
+    yesBtn.addEventListener('click', () => {
+      message.style.display = 'block';
+      catContainer.style.display = 'block';
+      // Random cat photo
+      catImg.src = 'https://placecats.com/300/250';
+    });
 
-      if (tries >= 5) {
-        cat.style.display = "block";
-        counter.textContent = "No is officially retired.";
-        noBtn.style.display = "none";
+    // Make "No" button run away and count attempts
+    noBtn.addEventListener('mouseover', () => {
+      if (noAttempts >= maxAttempts) {
+        return; // stop moving after max attempts
+      }
+
+      noAttempts++;
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      const newLeft = Math.random() * (viewportWidth - 100);
+      const newTop = Math.random() * (viewportHeight - 50);
+
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = newLeft + 'px';
+      noBtn.style.top = newTop + 'px';
+
+      if (noAttempts === maxAttempts) {
+        // After 5 tries, show cat photo automatically
+        catContainer.style.display = 'block';
+        catImg.src = 'https://placecats.com/300/250';
       }
     });
 
-    function yesClicked() {
-      document.body.innerHTML = `
-        <div style="text-align:center;">
-          <h1 style="color:white;">YAYYYYY 💕🥰</h1>
-          <p style="color:white; font-size:20px;">Best Valentine ever 💘</p>
-        </div>
-      `;
-    }
+    // If she somehow clicks "No", treat it as "Yes"
+    noBtn.addEventListener('click', () => {
+      message.style.display = 'block';
+      catContainer.style.display = 'block';
+      catImg.src = 'https://placecats.com/300/250';
+    });
   </script>
-
 </body>
 </html>
